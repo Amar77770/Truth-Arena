@@ -1,4 +1,5 @@
 # 🛡️ TRUTH ARENA - The ExamGuard System
+# Link - 
 
 > **"Don't trust the forward button. Verify before you terrify."**
 
@@ -152,11 +153,6 @@ This is a community project built to help students. Pull requests are welcome!
 5.  Open a Pull Request
 
 ---
-
-## 💻 Link : 
-
-
-
 ## 📜 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
