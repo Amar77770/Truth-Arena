@@ -69,7 +69,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
     return (
         <div className="flex flex-col items-center justify-center h-[50vh] text-red-500 font-mono animate-pulse gap-4">
             <div className="text-6xl">⚠️</div>
-            <div className="font-arcade text-xl tracking-widest">>> ACCESSING CLASSIFIED MAINFRAME...</div>
+            <div className="font-arcade text-xl tracking-widest">&gt;&gt; ACCESSING CLASSIFIED MAINFRAME...</div>
             <div className="text-xs text-red-800">AUTHORIZATION CODE: OMEGA</div>
         </div>
     );

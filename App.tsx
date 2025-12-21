@@ -499,7 +499,7 @@ const App: React.FC = () => {
                                               <h2 className={`font-comic text-6xl ${theme.title} mb-6 uppercase drop-shadow-[3px_3px_0px_#000] tracking-tight`}>"{report.topic}"</h2>
                                               <div className={`font-mono ${theme.summaryText} text-xl leading-relaxed border-l-8 ${theme.summaryBorder} pl-8 bg-white/5 p-6 italic`}>{report.summary}</div>
                                               <div className="mt-8 bg-black/40 border border-gray-800 p-4">
-                                                  <h4 className="font-arcade text-[10px] text-yellow-400 mb-2 uppercase tracking-widest">>> COMBAT_DIRECTIVE:</h4>
+                                                  <h4 className="font-arcade text-[10px] text-yellow-400 mb-2 uppercase tracking-widest">&gt;&gt; COMBAT_DIRECTIVE:</h4>
                                                   <p className="font-mono text-white text-sm uppercase">{report.actionRecommendation}</p>
                                               </div>
                                             </div>

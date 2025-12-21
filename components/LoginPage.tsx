@@ -34,7 +34,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
         </div>
 
         <div className="bg-black border-4 border-white p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,0.5)] max-w-md w-full mx-auto relative group">
-            <h2 className="font-arcade text-cyan-400 text-xs mb-6 text-left">>> ENTER GAMERTAG_</h2>
+            <h2 className="font-arcade text-cyan-400 text-xs mb-6 text-left">&gt;&gt; ENTER GAMERTAG_</h2>
             
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <input 

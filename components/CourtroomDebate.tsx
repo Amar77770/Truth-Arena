@@ -105,7 +105,7 @@ const CourtroomDebate: React.FC<CourtroomDebateProps> = ({ script }) => {
                     <div className="relative bg-[#111] border-4 border-pink-600 p-6 max-w-[75%] shadow-[8px_8px_0px_0px_rgba(236,72,153,0.1)] group-hover/arena:border-pink-400 transition-colors">
                         <div className="absolute bottom-4 -left-4 w-0 h-0 border-t-[12px] border-t-transparent border-r-[16px] border-r-pink-600 border-b-[12px] border-b-transparent"></div>
                         <p className="font-mono text-pink-400 text-sm md:text-base leading-relaxed uppercase tracking-tighter">
-                            <span className="text-[10px] text-pink-900 block mb-2">>> RX_SIGNAL:</span>
+                            <span className="text-[10px] text-pink-900 block mb-2">&gt;&gt; RX_SIGNAL:</span>
                             {turn.text}
                         </p>
                     </div>
@@ -117,7 +117,7 @@ const CourtroomDebate: React.FC<CourtroomDebateProps> = ({ script }) => {
                     <div className="relative bg-[#111] border-4 border-cyan-600 p-6 max-w-[75%] shadow-[-8px_8px_0px_0px_rgba(34,211,238,0.1)] group-hover/arena:border-cyan-400 transition-colors">
                         <div className="absolute bottom-4 -right-4 w-0 h-0 border-t-[12px] border-t-transparent border-l-[16px] border-l-cyan-600 border-b-[12px] border-b-transparent"></div>
                         <p className="font-mono text-cyan-400 text-sm md:text-base leading-relaxed uppercase tracking-tighter">
-                            <span className="text-[10px] text-cyan-900 block mb-2 text-right">>> TX_REBUTTAL:</span>
+                            <span className="text-[10px] text-cyan-900 block mb-2 text-right">&gt;&gt; TX_REBUTTAL:</span>
                             {turn.text}
                         </p>
                     </div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { soundService } from '../services/soundService';
 
@@ -254,7 +255,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
           <div className="max-w-6xl mx-auto">
               <div className="flex flex-col md:flex-row gap-12 items-center">
                   <div className="flex-1 text-left">
-                      <div className="font-arcade text-red-500 text-xs mb-4 animate-pulse">>> WARNING: THREAT DETECTED</div>
+                      <div className="font-arcade text-red-500 text-xs mb-4 animate-pulse">&gt;&gt; WARNING: THREAT DETECTED</div>
                       <h2 className="font-comic text-5xl md:text-7xl text-white mb-6 uppercase leading-tight">
                           THE SIGNAL IS <br/><span className="text-red-600">COMPROMISED</span>
                       </h2>
@@ -282,7 +283,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
                       {/* Glitchy Card Visual */}
                       <div className="relative z-10 bg-black border-4 border-red-600 p-8 transform rotate-2 shadow-[10px_10px_0px_#7f1d1d]">
                           <div className="absolute -top-3 -right-3 bg-red-600 text-black font-arcade text-xs px-2 py-1">FAKE</div>
-                          <div className="font-mono text-xs text-gray-500 mb-2">>> MESSAGE_ID: 99281</div>
+                          <div className="font-mono text-xs text-gray-500 mb-2">&gt;&gt; MESSAGE_ID: 99281</div>
                           <div className="font-serif text-lg text-white mb-4">"URGENT: JEE MAINS 2025 CANCELLED DUE TO SOLAR FLARES!!"</div>
                           <div className="h-2 w-full bg-gray-800 rounded overflow-hidden">
                               <div className="h-full bg-red-600 w-3/4"></div>
