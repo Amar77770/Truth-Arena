@@ -1,11 +1,8 @@
 # 🛡️ TRUTH ARENA - The ExamGuard System
-# Link - 
 
 > **"Don't trust the forward button. Verify before you terrify."**
 
-<img width="1919" height="1011" alt="image" src="https://github.com/user-attachments/assets/cc8f0d7b-9b1b-4e53-ae09-bc5b43569473" />
-
-
+![Banner Placeholder] 
 
 **Truth Arena** is a gamified, real-time fact-checking engine designed specifically for the Indian competitive exam ecosystem (JEE, NEET, UPSC, CBSE). It combines the aesthetic of a retro 8-bit fighting game with the power of **Google Gemini 3.0** and **Search Grounding** to dismantle fake news, morphed screenshots, and viral rumors.
 
@@ -29,41 +26,27 @@ Truth Arena doesn't just tell you if something is true or false; it simulates a 
 2.  **Advocate Logic (P2):** Represents facts grounded in Google Search.
 3.  **The Judge:** Delivers the final verdict.
 
-Students upload an Image, audio, video or type a rumor, and the system initiates a "Fight," resulting in a clear, confidence-scored verdict.
+Students upload a screenshot or type a rumor, and the system initiates a "Fight," resulting in a clear, confidence-scored verdict.
 
 ---
 
 ## 📸 Screenshots
 
-### 1. The Landing Terminal (Landing Page)
+### 1. The Landing Terminal
 *A retro BIOS boot sequence and 3D perspective grid welcoming the user.*
-
-<img width="1919" height="982" alt="image" src="https://github.com/user-attachments/assets/a0c63bf6-da2f-49ba-8cda-b9213ad2e076" />
-<img width="1887" height="873" alt="image" src="https://github.com/user-attachments/assets/6ff54155-5198-4925-9886-62ed63b06ef6" />
-<img width="1858" height="856" alt="image" src="https://github.com/user-attachments/assets/6c6a8474-9421-4a54-a662-a9046e4f4d1f" />
-<img width="1871" height="836" alt="image" src="https://github.com/user-attachments/assets/5348dce0-afef-4583-97d8-0698ca0c6de1" />
-<img width="1828" height="884" alt="image" src="https://github.com/user-attachments/assets/eb1a572c-466d-4a2c-a7f7-739abe7e332a" />
-
-
+![Landing Page]
 
 ### 2. The Battle Interface
 *The user inputs a rumor or uploads a screenshot to start the analysis.*
-<img width="1893" height="940" alt="image" src="https://github.com/user-attachments/assets/213816ca-c5fc-41dc-805e-fcdc73d6668e" />
-
+![Battle Interface]
 
 ### 3. The Courtroom Debate
 *Real-time AI agents debating the facts in an arcade style.*
-<img width="1919" height="996" alt="image" src="https://github.com/user-attachments/assets/49fb0513-f0f5-4abf-8eae-50539fc2aaa9" />
-
+![Courtroom Debate]
 
 ### 4. The Verdict Report
 *A detailed dossier containing forensic analysis, official timelines, and action points.*
-<img width="1919" height="1001" alt="image" src="https://github.com/user-attachments/assets/5edce986-a171-478a-b071-74018e4b898d" />
-
-
-### 5. News Feed
-*A Exam dedicated News feed to keep you up to date *
-<img width="1919" height="1008" alt="image" src="https://github.com/user-attachments/assets/e47ad924-518d-4a68-851b-5d0c7fef3a3f" />
+![Verdict Report]
 
 ---
 
@@ -89,7 +72,6 @@ Students upload an Image, audio, video or type a rumor, and the system initiates
 *   **Action Directives:** Tells the student exactly what to do (e.g., "Ignore the PDF," "Check nta.ac.in").
 *   **Intel Feed:** A live news feed of verified updates, cached to reduce API calls.
 *   **Retro Sound Design:** Custom sound service for clicks, battles, and typing effects.
-*    **Admin Dasboard :** To keep track of the data of the app. Use **Admin11** on playertag to get access.
 
 ---
 
@@ -153,6 +135,7 @@ This is a community project built to help students. Pull requests are welcome!
 5.  Open a Pull Request
 
 ---
+
 ## 📜 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
