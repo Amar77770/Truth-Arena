@@ -104,37 +104,46 @@ export async function analyzeExamNews(topic: string, media?: MediaData): Promise
 }
 
 export async function getLatestExamNews(): Promise<NewsItem[]> {
-  if (!process.env.API_KEY) return [];
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: "List the 5 most critical recent news items about Indian competitive exams (JEE, NEET, UPSC, etc.) from the last 2 days. Ensure they are verified and official.",
-    config: {
-      tools: [{ googleSearch: {} }],
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.ARRAY,
-        items: {
-          type: Type.OBJECT,
-          properties: {
-            id: { type: Type.STRING },
-            headline: { type: Type.STRING },
-            summary: { type: Type.STRING },
-            sourceName: { type: Type.STRING },
-            sourceUrl: { type: Type.STRING },
-            timestamp: { type: Type.STRING }
-          },
-          required: ["id", "headline", "summary", "sourceName", "sourceUrl", "timestamp"],
-          propertyOrdering: ["id", "headline", "summary", "sourceName", "sourceUrl", "timestamp"]
-        }
-      }
-    }
-  });
+  if (!process.env.API_KEY) {
+      console.error("API Key missing for News Feed");
+      return [];
+  }
 
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  
   try {
-    return JSON.parse(response.text || "[]");
+    const response = await ai.models.generateContent({
+        model: 'gemini-3-flash-preview',
+        contents: "List 5 critical recent news items about Indian competitive exams (JEE, NEET, UPSC) from the last 48 hours. Return a JSON array with fields: id, headline, summary, sourceName, sourceUrl, timestamp. Ensure strictly valid JSON.",
+        config: {
+        tools: [{ googleSearch: {} }],
+        responseMimeType: "application/json",
+        responseSchema: {
+            type: Type.ARRAY,
+            items: {
+            type: Type.OBJECT,
+            properties: {
+                id: { type: Type.STRING },
+                headline: { type: Type.STRING },
+                summary: { type: Type.STRING },
+                sourceName: { type: Type.STRING },
+                sourceUrl: { type: Type.STRING },
+                timestamp: { type: Type.STRING }
+            },
+            required: ["id", "headline", "summary", "sourceName", "sourceUrl", "timestamp"],
+            }
+        }
+        }
+    });
+
+    if (response.text) {
+        return JSON.parse(response.text);
+    }
+    return [];
+
   } catch (e) {
-    console.error("News Parse Error", e);
+    console.error("News Fetch Error:", e);
+    // Fallback: Return empty or mock data if needed, but here we return empty to let UI handle it.
     return [];
   }
 }
@@ -156,12 +165,15 @@ export async function getStudyCoachResponse(history: ChatMessage[], message: str
 
 function parseResponse(result: any, originalTopic: string): FactCheckReport {
   let text = result.text || "{}";
+  
+  // Cleanup JSON if it contains markdown code blocks
   const startIndex = text.indexOf('{');
   const endIndex = text.lastIndexOf('}');
   if (startIndex !== -1 && endIndex !== -1) {
       text = text.substring(startIndex, endIndex + 1);
   }
   const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+  
   let data: any = {};
   try {
     data = JSON.parse(cleanJson);
@@ -171,8 +183,14 @@ function parseResponse(result: any, originalTopic: string): FactCheckReport {
   }
 
   const sources: Source[] = [];
-  if (result.candidates?.[0]?.groundingMetadata?.groundingChunks) {
-    result.candidates[0].groundingMetadata.groundingChunks.forEach((c: any) => {
+  
+  // Robust extraction of grounding chunks
+  const candidate = result.candidates?.[0];
+  const groundingMetadata = candidate?.groundingMetadata;
+  const chunks = groundingMetadata?.groundingChunks;
+
+  if (chunks && Array.isArray(chunks)) {
+    chunks.forEach((c: any) => {
       if (c.web?.uri && c.web?.title) {
         sources.push({ title: c.web.title, uri: c.web.uri });
       }

@@ -40,12 +40,15 @@ const NewsPage: React.FC<NewsPageProps> = ({ username }) => {
     }
 
     const data = await getLatestExamNews();
-    if (data.length > 0) {
+    if (data && data.length > 0) {
       setNews(data);
       setSourceType('LIVE_AI');
       localStorage.setItem(CACHE_KEY_DATA, JSON.stringify(data));
       localStorage.setItem(CACHE_KEY_TIME, now.toString());
       saveNewsSnapshot(data);
+    } else {
+        // Handle empty response (likely API key missing or AI refusal)
+        setNews([]);
     }
     setLoading(false);
   };
@@ -59,10 +62,15 @@ const NewsPage: React.FC<NewsPageProps> = ({ username }) => {
       if (cachedData && cachedTime) {
         const age = now - parseInt(cachedTime);
         if (age < REFRESH_INTERVAL) {
-          setNews(JSON.parse(cachedData));
-          setSourceType('LOCAL_CACHE');
-          setLoading(false);
-          return;
+          try {
+            const parsed = JSON.parse(cachedData);
+            if (parsed.length > 0) {
+                setNews(parsed);
+                setSourceType('LOCAL_CACHE');
+                setLoading(false);
+                return;
+            }
+          } catch(e) {}
         }
       }
       await fetchNews();
@@ -118,6 +126,21 @@ const NewsPage: React.FC<NewsPageProps> = ({ username }) => {
                     <div className="absolute inset-0 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
                </div>
                <div className="font-arcade text-green-400 text-xs animate-pulse tracking-[0.2em]">DECRYPTING_SIGNALS...</div>
+           </div>
+       ) : news.length === 0 ? (
+           <div className="flex flex-col items-center justify-center py-24 border-4 border-dashed border-gray-800 bg-black/40">
+               <div className="text-6xl grayscale opacity-20 mb-4">📡</div>
+               <h3 className="font-arcade text-gray-500 text-sm mb-2">NO_INTEL_FOUND</h3>
+               <p className="font-mono text-gray-600 text-xs italic max-w-md text-center">
+                   The satellites are offline or the API Uplink key is missing. 
+                   <br/>Check your connection credentials (API_KEY).
+               </p>
+               <button 
+                  onClick={() => { soundService.playClick(); fetchNews(); }}
+                  className="mt-6 font-arcade text-[10px] bg-gray-900 text-green-500 px-4 py-2 border border-green-900 hover:border-green-500 hover:text-white transition-all"
+               >
+                   RETRY_UPLINK
+               </button>
            </div>
        ) : (
            <div className="grid gap-8">
