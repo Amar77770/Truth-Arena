@@ -232,17 +232,8 @@ export async function getLatestExamNews(): Promise<NewsItem[]> {
 
     if (response.text) {
         const cleaned = cleanJsonText(response.text);
-        try {
-            const parsed = JSON.parse(cleaned);
-            // CRITICAL FIX: If API returns empty array (no recent news found), use Mock Data
-            if (Array.isArray(parsed) && parsed.length > 0) {
-                return parsed;
-            }
-        } catch (e) {
-            console.error("News JSON Parse Error", e);
-        }
+        return JSON.parse(cleaned);
     }
-    // Fallback if text is empty or array is empty
     return getMockNews();
 
   } catch (e) {
@@ -297,27 +288,6 @@ function parseResponse(result: any, originalTopic: string): FactCheckReport {
         sources.push({ title: c.web.title, uri: c.web.uri });
       }
     });
-  }
-
-  // CRITICAL FIX: Ensure sources list is never empty
-  if (sources.length === 0) {
-      const lowerTopic = originalTopic.toLowerCase();
-      // Add smart defaults based on topic if no live sources were returned
-      if (lowerTopic.includes('jee') || lowerTopic.includes('mains')) {
-          sources.push({ title: "Official NTA JEE Portal", uri: "https://jeemain.nta.ac.in" });
-      } else if (lowerTopic.includes('neet')) {
-          sources.push({ title: "Official NTA NEET Portal", uri: "https://exams.nta.ac.in/NEET" });
-      } else if (lowerTopic.includes('cbse')) {
-          sources.push({ title: "CBSE Official Website", uri: "https://cbse.gov.in" });
-      } else if (lowerTopic.includes('upsc')) {
-          sources.push({ title: "UPSC Official Website", uri: "https://upsc.gov.in" });
-      }
-
-      // Always add a verification link
-      sources.push({ 
-          title: "Google Search Verification", 
-          uri: `https://www.google.com/search?q=${encodeURIComponent(originalTopic + " official news")}` 
-      });
   }
 
   const finalTopic = (data.topic && data.topic !== "NO TEXT PROVIDED, CHECK MEDIA") ? data.topic : (originalTopic || "Unknown Rumor");
