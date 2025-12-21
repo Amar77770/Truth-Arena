@@ -1,0 +1,5 @@
+{
+  "name": "TRUTH ARENA - The Ultimate Fight",
+  "description": "A real-time entrance exam news verification system using Gemini 2.5 and Google Search Grounding to detect fake news, extract claims, and provide confidence-scored verdicts.",
+  "requestFramePermissions": []
+}
