@@ -17,7 +17,7 @@ const NewsPage: React.FC<NewsPageProps> = ({ username }) => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [nextUpdate, setNextUpdate] = useState<string>('');
-  const [sourceType, setSourceType] = useState<'GLOBAL_DB' | 'LOCAL_CACHE' | 'LIVE_AI'>('LIVE_AI');
+  const [sourceType, setSourceType] = useState<'GLOBAL_DB' | 'LOCAL_CACHE' | 'LIVE_AI' | 'SIMULATION'>('LIVE_AI');
 
   const fetchNews = async () => {
     setLoading(true);
@@ -40,16 +40,19 @@ const NewsPage: React.FC<NewsPageProps> = ({ username }) => {
     }
 
     const data = await getLatestExamNews();
-    if (data && data.length > 0) {
-      setNews(data);
-      setSourceType('LIVE_AI');
-      localStorage.setItem(CACHE_KEY_DATA, JSON.stringify(data));
-      localStorage.setItem(CACHE_KEY_TIME, now.toString());
-      saveNewsSnapshot(data);
-    } else {
-        // Handle empty response (likely API key missing or AI refusal)
-        setNews([]);
+    
+    // Check if it's mock data
+    const isMock = data.length > 0 && data[0].id.startsWith('sim-');
+    
+    setNews(data);
+    setSourceType(isMock ? 'SIMULATION' : 'LIVE_AI');
+    
+    if (!isMock && data.length > 0) {
+        localStorage.setItem(CACHE_KEY_DATA, JSON.stringify(data));
+        localStorage.setItem(CACHE_KEY_TIME, now.toString());
+        saveNewsSnapshot(data);
     }
+    
     setLoading(false);
   };
 
@@ -111,8 +114,8 @@ const NewsPage: React.FC<NewsPageProps> = ({ username }) => {
            </div>
            <div className="mt-4 md:mt-0 text-right font-arcade text-[9px] bg-black/50 p-3 border border-green-900 shadow-inner">
                <div className="flex items-center justify-end gap-2 text-green-500 mb-1">
-                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                   NEURAL_SYNC_ONLINE
+                   <span className={`w-2 h-2 rounded-full ${sourceType === 'SIMULATION' ? 'bg-yellow-500' : 'bg-green-500 animate-pulse'}`}></span>
+                   {sourceType === 'SIMULATION' ? 'OFFLINE_MODE' : 'NEURAL_SYNC_ONLINE'}
                </div>
                <div className="text-gray-500">NEXT_RECALIBRATION: {nextUpdate}</div>
                <div className="text-[10px] text-gray-700 mt-1">SOURCE: {sourceType}</div>
