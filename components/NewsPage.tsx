@@ -115,7 +115,7 @@ const NewsPage: React.FC<NewsPageProps> = ({ username }) => {
            <div className="mt-4 md:mt-0 text-right font-arcade text-[9px] bg-black/50 p-3 border border-green-900 shadow-inner">
                <div className="flex items-center justify-end gap-2 text-green-500 mb-1">
                    <span className={`w-2 h-2 rounded-full ${sourceType === 'SIMULATION' ? 'bg-yellow-500' : 'bg-green-500 animate-pulse'}`}></span>
-                   {sourceType === 'SIMULATION' ? 'OFFLINE_MODE' : 'NEURAL_SYNC_ONLINE'}
+                   {sourceType === 'SIMULATION' ? 'SIMULATION_UPLINK' : 'NEURAL_SYNC_ONLINE'}
                </div>
                <div className="text-gray-500">NEXT_RECALIBRATION: {nextUpdate}</div>
                <div className="text-[10px] text-gray-700 mt-1">SOURCE: {sourceType}</div>
