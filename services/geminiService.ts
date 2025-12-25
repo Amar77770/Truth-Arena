@@ -169,21 +169,22 @@ export async function analyzeExamNews(topic: string, media?: MediaData): Promise
     STRICT DOMAIN RULE:
     Your domain is STRICTLY restricted to: Education, Exams (JEE, NEET, CBSE, UPSC, CUET, etc.), Results, Syllabus, and Student Life Rumors.
     
-    IF THE USER INPUT (Text or Media) IS UNRELATED:
-    1. Set "topic" to "OFF-TOPIC DETECTED".
-    2. Set "summary" to "SYSTEM ERROR: This court only hears cases regarding Exam Rumors and Academic News."
-    3. Set "overallConfidence" to 0.
-    4. Return exactly one claim indicating a jurisdiction error.
+    CRITICAL TOOLS INSTRUCTION:
+    1. You HAVE access to the "googleSearch" tool.
+    2. You MUST USE the "googleSearch" tool to verify the user's claim against the latest real-time internet data.
+    3. Do NOT say "I cannot access the web". You can.
+    4. If the search returns official links (nta.ac.in, pib.gov.in), cite them explicitly in the reasoning and debate.
 
-    IF RELEVANT, PROCEED WITH NORMAL TASK:
+    TASK EXECUTION FLOW:
     1. IDENTIFY THE TOPIC.
-    2. Verify using Google Search.
-    3. Generate a "Battle Script" (at least 6 turns). 
-       Speakers MUST be exactly: "Advocate Rumor", "Advocate Fact", and "Judge".
+    2. **EXECUTE SEARCH**: Search for the official notification or latest news about "${topic}".
+    3. **GENERATE BATTLE SCRIPT**: 
+       - "Advocate Rumor" pushes the user's claim.
+       - "Advocate Fact" uses the SEARCH RESULTS to debunk or verify it.
+       - "Judge" delivers the final verdict based on the evidence found.
+       - The Judge MUST NOT say "I don't have internet". The Judge represents the Search Results.
     4. Extract claims and verdicts.
-    5. Provide an official timeline of events if applicable.
-    6. Identify common misconceptions.
-    7. Give a clear action recommendation for students.
+    5. Provide an official timeline of events based on the search results.
 
     OUTPUT FORMAT: Return ONLY a raw JSON object. Do not include any text before or after the JSON.
     {
@@ -249,27 +250,28 @@ export async function getLatestExamNews(): Promise<NewsItem[]> {
   const ai = new GoogleGenAI({ apiKey });
   
   try {
+    // We explicitly tell it to use the tool in the prompt content to ensure it triggers.
     const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
-        contents: "List 5 critical recent news items about Indian competitive exams (JEE, NEET, UPSC) from the last 48 hours. Return a JSON array with fields: id, headline, summary, sourceName, sourceUrl, timestamp. Ensure strictly valid JSON.",
+        contents: "USE GOOGLE SEARCH TOOL. Find 5 critical, real-world, recent news items about Indian competitive exams (JEE, NEET, UPSC, CBSE) from the last 24-48 hours. IGNORE old news. Return a JSON array with fields: id, headline, summary, sourceName, sourceUrl, timestamp.",
         config: {
-        tools: [{ googleSearch: {} }],
-        responseMimeType: "application/json",
-        responseSchema: {
-            type: Type.ARRAY,
-            items: {
-            type: Type.OBJECT,
-            properties: {
-                id: { type: Type.STRING },
-                headline: { type: Type.STRING },
-                summary: { type: Type.STRING },
-                sourceName: { type: Type.STRING },
-                sourceUrl: { type: Type.STRING },
-                timestamp: { type: Type.STRING }
-            },
-            required: ["id", "headline", "summary", "sourceName", "sourceUrl", "timestamp"],
+            tools: [{ googleSearch: {} }],
+            responseMimeType: "application/json",
+            responseSchema: {
+                type: Type.ARRAY,
+                items: {
+                type: Type.OBJECT,
+                properties: {
+                    id: { type: Type.STRING },
+                    headline: { type: Type.STRING },
+                    summary: { type: Type.STRING },
+                    sourceName: { type: Type.STRING },
+                    sourceUrl: { type: Type.STRING },
+                    timestamp: { type: Type.STRING }
+                },
+                required: ["id", "headline", "summary", "sourceName", "sourceUrl", "timestamp"],
+                }
             }
-        }
         }
     });
 
