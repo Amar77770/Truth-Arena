@@ -19,9 +19,17 @@ export const getApiKey = () => {
     if (local) return local;
   }
 
-  // 2. Check process.env (injected by Vite define)
-  // This try-catch block ensures that if 'process' is undefined in the browser, 
-  // we don't crash. If Vite replaced the string, it will be a string literal and safe.
+  // 2. Check Standard Vite Env Vars (import.meta.env)
+  // We check this safely to avoid TS/Runtime errors in non-standard environments
+  try {
+    if (import.meta && import.meta.env) {
+       if (import.meta.env.VITE_API_KEY) return import.meta.env.VITE_API_KEY;
+       if (import.meta.env.API_KEY) return import.meta.env.API_KEY;
+    }
+  } catch (e) {}
+
+  // 3. Check process.env (injected by Vite define in vite.config.ts)
+  // The 'define' plugin replaces 'process.env.API_KEY' string literal with the actual key value.
   try {
     // @ts-ignore
     const processKey = process.env.API_KEY;

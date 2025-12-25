@@ -10,12 +10,15 @@ interface LoginPageProps {
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [keyInput, setKeyInput] = useState('');
-  const [hasKey, setHasKey] = useState(false);
+  const [hasEnvKey, setHasEnvKey] = useState(false);
+  const [showManualInput, setShowManualInput] = useState(false);
 
   useEffect(() => {
     // Check if key exists on mount
     const key = getApiKey();
-    setHasKey(!!key);
+    if (key) {
+        setHasEnvKey(true);
+    }
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -63,11 +66,35 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                     autoFocus
                 />
 
-                {!hasKey && (
+                {hasEnvKey && !showManualInput ? (
+                    <div className="bg-green-900/20 border-2 border-green-600 p-3 mt-2 animate-fade-in-up">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                <span className="font-arcade text-[9px] text-green-400">SECURE UPLINK ESTABLISHED</span>
+                            </div>
+                            <button 
+                                type="button" 
+                                onClick={() => setShowManualInput(true)}
+                                className="text-[8px] text-gray-500 underline hover:text-white"
+                            >
+                                EDIT
+                            </button>
+                        </div>
+                        <div className="text-[8px] text-green-700 text-left mt-1 font-mono">
+                            API KEY DETECTED FROM ENVIRONMENT
+                        </div>
+                    </div>
+                ) : (
                     <div className="animate-fade-in-up mt-2">
-                         <div className="flex items-center gap-2 mb-2">
-                            <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                            <label className="font-arcade text-[8px] text-red-400">UPLINK_SIGNAL_LOST: ENTER API KEY</label>
+                         <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                                <label className="font-arcade text-[8px] text-red-400">UPLINK_SIGNAL_LOST: ENTER API KEY</label>
+                            </div>
+                            {hasEnvKey && (
+                                <button type="button" onClick={() => setShowManualInput(false)} className="text-[8px] text-gray-500 underline">CANCEL</button>
+                            )}
                          </div>
                          <input 
                             type="password" 
@@ -86,7 +113,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                     type="submit"
                     className="btn-retro bg-[#ff00ff] hover:bg-pink-600 text-white font-arcade text-sm py-4 border-b-4 border-pink-900 mt-2"
                 >
-                    {hasKey || keyInput ? "ESTABLISH LINK" : "ENTER OFFLINE MODE"}
+                    {hasEnvKey || keyInput ? "ESTABLISH LINK" : "ENTER OFFLINE MODE"}
                 </button>
             </form>
 
