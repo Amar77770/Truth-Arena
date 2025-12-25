@@ -20,7 +20,6 @@ export const getApiKey = () => {
   }
 
   // 2. Check Standard Vite Env (VITE_API_KEY)
-  // We use @ts-ignore to bypass the build error you saw earlier, but still check it at runtime
   try {
     // @ts-ignore
     if (import.meta.env && import.meta.env.VITE_API_KEY) {
@@ -163,9 +162,6 @@ export async function analyzeExamNews(topic: string, media?: MediaData): Promise
     You are the Game Master of "TRUTH ARENA 2025". 
     Your job is to verify entrance exam news by simulating a CHAOTIC ARCADE BATTLE debate.
     
-    The Challenger (User Input) is: "${topic || "NO TEXT PROVIDED, CHECK MEDIA"}".
-    ${media ? "WARNING: VISUAL/AUDIO EVIDENCE ATTACHED." : ""}
-
     STRICT DOMAIN RULE:
     Your domain is STRICTLY restricted to: Education, Exams (JEE, NEET, CBSE, UPSC, CUET, etc.), Results, Syllabus, and Student Life Rumors.
     
@@ -177,7 +173,7 @@ export async function analyzeExamNews(topic: string, media?: MediaData): Promise
 
     TASK EXECUTION FLOW:
     1. IDENTIFY THE TOPIC.
-    2. **EXECUTE SEARCH**: Search for the official notification or latest news about "${topic}".
+    2. **EXECUTE SEARCH**: Search for the official notification or latest news about the user input.
     3. **GENERATE BATTLE SCRIPT**: 
        - "Advocate Rumor" pushes the user's claim.
        - "Advocate Fact" uses the SEARCH RESULTS to debunk or verify it.
@@ -203,8 +199,10 @@ export async function analyzeExamNews(topic: string, media?: MediaData): Promise
     }
   `;
 
-  // Fix: explicitly type 'parts' as any[] to avoid inference error when pushing inlineData
-  const parts: any[] = [{ text: systemInstruction }];
+  // Construct the User Message
+  const userPrompt = `The Challenger (User Input) is: "${topic || "NO TEXT PROVIDED, CHECK MEDIA"}". ${media ? "WARNING: VISUAL/AUDIO EVIDENCE ATTACHED." : ""}`;
+  
+  const parts: any[] = [{ text: userPrompt }];
   
   if (media) {
     parts.push({
@@ -220,6 +218,8 @@ export async function analyzeExamNews(topic: string, media?: MediaData): Promise
       model,
       contents: { parts },
       config: {
+        // MOVED systemInstruction to config to ensure Tools are recognized properly
+        systemInstruction: systemInstruction,
         tools: [{ googleSearch: {} }],
         temperature: 0.9,
       },
@@ -250,28 +250,13 @@ export async function getLatestExamNews(): Promise<NewsItem[]> {
   const ai = new GoogleGenAI({ apiKey });
   
   try {
-    // We explicitly tell it to use the tool in the prompt content to ensure it triggers.
+    // NOTE: We do NOT use responseSchema here because JSON mode often disables Tools in Gemini Preview.
+    // We strictly use Prompt Engineering to get JSON while allowing the Tool to run.
     const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
-        contents: "USE GOOGLE SEARCH TOOL. Find 5 critical, real-world, recent news items about Indian competitive exams (JEE, NEET, UPSC, CBSE) from the last 24-48 hours. IGNORE old news. Return a JSON array with fields: id, headline, summary, sourceName, sourceUrl, timestamp.",
+        contents: "USE GOOGLE SEARCH TOOL. Find 5 critical, real-world, recent news items about Indian competitive exams (JEE, NEET, UPSC, CBSE) from the last 24-48 hours. IGNORE old news. Return a VALID RAW JSON ARRAY with fields: id, headline, summary, sourceName, sourceUrl, timestamp.",
         config: {
-            tools: [{ googleSearch: {} }],
-            responseMimeType: "application/json",
-            responseSchema: {
-                type: Type.ARRAY,
-                items: {
-                type: Type.OBJECT,
-                properties: {
-                    id: { type: Type.STRING },
-                    headline: { type: Type.STRING },
-                    summary: { type: Type.STRING },
-                    sourceName: { type: Type.STRING },
-                    sourceUrl: { type: Type.STRING },
-                    timestamp: { type: Type.STRING }
-                },
-                required: ["id", "headline", "summary", "sourceName", "sourceUrl", "timestamp"],
-                }
-            }
+            tools: [{ googleSearch: {} }] 
         }
     });
 
@@ -279,7 +264,6 @@ export async function getLatestExamNews(): Promise<NewsItem[]> {
         const cleaned = cleanJsonText(response.text);
         try {
             const parsed = JSON.parse(cleaned);
-            // CRITICAL FIX: If API returns empty array (no recent news found), use Mock Data
             if (Array.isArray(parsed) && parsed.length > 0) {
                 return parsed;
             }
@@ -287,7 +271,6 @@ export async function getLatestExamNews(): Promise<NewsItem[]> {
             console.error("News JSON Parse Error", e);
         }
     }
-    // Fallback if text is empty or array is empty
     return getMockNews();
 
   } catch (e) {
@@ -345,10 +328,9 @@ function parseResponse(result: any, originalTopic: string): FactCheckReport {
     });
   }
 
-  // CRITICAL FIX: Ensure sources list is never empty
+  // Ensure sources list is never empty
   if (sources.length === 0) {
       const lowerTopic = originalTopic.toLowerCase();
-      // Add smart defaults based on topic if no live sources were returned
       if (lowerTopic.includes('jee') || lowerTopic.includes('mains')) {
           sources.push({ title: "Official NTA JEE Portal", uri: "https://jeemain.nta.ac.in" });
       } else if (lowerTopic.includes('neet')) {
@@ -358,8 +340,6 @@ function parseResponse(result: any, originalTopic: string): FactCheckReport {
       } else if (lowerTopic.includes('upsc')) {
           sources.push({ title: "UPSC Official Website", uri: "https://upsc.gov.in" });
       }
-
-      // Always add a verification link
       sources.push({ 
           title: "Google Search Verification", 
           uri: `https://www.google.com/search?q=${encodeURIComponent(originalTopic + " official news")}` 
