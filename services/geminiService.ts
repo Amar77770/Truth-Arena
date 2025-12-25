@@ -4,24 +4,37 @@ import { FactCheckReport, Source, Claim, VerdictType, ClaimSeverity, DebateTurn,
 
 // Helper to generate IDs
 const generateId = () => Math.random().toString(36).substr(2, 9);
+const LOCAL_STORAGE_KEY_API = 'truth_arena_api_key';
 
 interface MediaData {
   mimeType: string;
   data: string;
 }
 
-// Robust API Key Retrieval
-const getApiKey = () => {
-  // Check process.env (injected by Vite define)
-  if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-    return process.env.API_KEY;
+// Robust API Key Retrieval with LocalStorage Fallback
+export const getApiKey = () => {
+  // 1. Check Local Storage (Manual Override for deployments)
+  if (typeof window !== 'undefined') {
+    const local = localStorage.getItem(LOCAL_STORAGE_KEY_API);
+    if (local) return local;
   }
-  // Check import.meta.env (Standard Vite)
-  const meta = import.meta as any;
-  if (meta && meta.env && meta.env.VITE_API_KEY) {
-    return meta.env.VITE_API_KEY;
+
+  // 2. Check process.env (injected by Vite define)
+  // This try-catch block ensures that if 'process' is undefined in the browser, 
+  // we don't crash. If Vite replaced the string, it will be a string literal and safe.
+  try {
+    // @ts-ignore
+    const processKey = process.env.API_KEY;
+    if (processKey) return processKey;
+  } catch (e) {
+    // Ignore ReferenceError if process is not defined
   }
+
   return '';
+};
+
+export const setManualApiKey = (key: string) => {
+    localStorage.setItem(LOCAL_STORAGE_KEY_API, key);
 };
 
 // Helper to clean JSON strings from Markdown code blocks
@@ -81,9 +94,9 @@ const getMockNews = (): NewsItem[] => [
     }
 ];
 
-const getMockReport = (topic: string): FactCheckReport => ({
+const getMockReport = (topic: string, errorDetails?: string): FactCheckReport => ({
     topic: topic || "UNKNOWN_SIGNAL",
-    summary: "SIMULATION PROTOCOL ACTIVE. Live uplink unavailable. Analyzing based on heuristic patterns and historical archive data. (Check API Key for live results).",
+    summary: errorDetails ? `SYSTEM ERROR: ${errorDetails}. (Switched to Simulation Mode)` : "SYSTEM ALERT: LIVE UPLINK FAILED. INITIATING ARCHIVE BATTLE. (Please enter your API Key in the Login screen to activate live intelligence).",
     timestamp: new Date().toISOString(),
     overallConfidence: 65,
     sources: [
@@ -130,7 +143,7 @@ export async function analyzeExamNews(topic: string, media?: MediaData): Promise
   if (!apiKey) {
     console.warn("API Key missing. Returning Simulation Data.");
     await new Promise(resolve => setTimeout(resolve, 2000));
-    return getMockReport(topic);
+    return getMockReport(topic, "API KEY MISSING");
   }
 
   const ai = new GoogleGenAI({ apiKey });
@@ -204,8 +217,14 @@ export async function analyzeExamNews(topic: string, media?: MediaData): Promise
     return parseResponse(result, topic);
 
   } catch (error: any) {
-    console.warn("Primary Grounding Attempt Failed, falling back to Simulation...", error);
-    return getMockReport(topic);
+    console.error("Gemini API Error:", error);
+    let errorMsg = "CONNECTION FAILED";
+    if (error.message?.includes("400")) errorMsg = "BAD REQUEST / INVALID KEY";
+    if (error.message?.includes("403")) errorMsg = "PERMISSION DENIED / QUOTA";
+    if (error.message?.includes("429")) errorMsg = "RATE LIMIT EXCEEDED";
+    if (error.message?.includes("500")) errorMsg = "GOOGLE SERVERS BUSY";
+    
+    return getMockReport(topic, errorMsg);
   }
 }
 
@@ -296,7 +315,7 @@ function parseResponse(result: any, originalTopic: string): FactCheckReport {
     data = JSON.parse(cleanJson);
   } catch (e) {
     console.error("JSON Parse Error. Raw text:", text, e);
-    return getMockReport(originalTopic);
+    return getMockReport(originalTopic, "JSON PARSING ERROR");
   }
 
   const sources: Source[] = [];

@@ -19,6 +19,16 @@ const NewsPage: React.FC<NewsPageProps> = ({ username }) => {
   const [nextUpdate, setNextUpdate] = useState<string>('');
   const [sourceType, setSourceType] = useState<'GLOBAL_DB' | 'LOCAL_CACHE' | 'LIVE_AI' | 'SIMULATION'>('LIVE_AI');
 
+  // Helper to fix broken URLs from AI (e.g. "upsc.gov.in" -> "https://upsc.gov.in")
+  const normalizeUrl = (url: string) => {
+    if (!url) return '#';
+    const trimmed = url.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+        return trimmed;
+    }
+    return `https://${trimmed}`;
+  };
+
   const fetchNews = async () => {
     setLoading(true);
 
@@ -183,7 +193,7 @@ const NewsPage: React.FC<NewsPageProps> = ({ username }) => {
 
                        <div className="flex items-center justify-between">
                            <a 
-                               href={item.sourceUrl} 
+                               href={normalizeUrl(item.sourceUrl)} 
                                target="_blank" 
                                rel="noopener noreferrer"
                                onClick={() => soundService.playClick()}

@@ -7,6 +7,16 @@ interface SourceListProps {
 }
 
 const SourceList: React.FC<SourceListProps> = ({ sources }) => {
+  // Helper to fix broken URLs from AI (e.g. "upsc.gov.in" -> "https://upsc.gov.in")
+  const normalizeUrl = (url: string) => {
+    if (!url) return '#';
+    const trimmed = url.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+        return trimmed;
+    }
+    return `https://${trimmed}`;
+  };
+
   return (
     <div className="mt-10 bg-[#0a0a0a] border-2 border-green-800 p-6 font-mono relative shadow-[0_0_20px_rgba(20,83,45,0.2)]">
       <div className="absolute -top-3 left-4 bg-black px-2 text-green-500 font-arcade text-xs border border-green-800 shadow-[0_0_10px_rgba(0,255,0,0.3)] z-10">
@@ -26,7 +36,7 @@ const SourceList: React.FC<SourceListProps> = ({ sources }) => {
               <li key={index} className="group relative">
                 {/* Link Container */}
                 <a 
-                  href={source.uri} 
+                  href={normalizeUrl(source.uri)} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-start gap-3 p-3 border border-transparent hover:border-green-500/50 hover:bg-green-900/20 transition-all duration-300 relative overflow-hidden block"

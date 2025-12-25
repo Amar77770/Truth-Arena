@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { soundService } from '../services/soundService';
+import { getApiKey } from '../services/geminiService';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -50,6 +51,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
     setBodyLines([]);
     setMemoryCount(0);
 
+    // Check API Key Status for Boot Log
+    const hasKey = !!getApiKey();
+    const linkStatus = hasKey ? "ONLINE (SECURE)" : "OFFLINE (SIMULATION MODE)";
+
     // Timeline Configuration
     const headers = [
         "Award Modular BIOS v4.51PG, An Energy Star Ally",
@@ -59,14 +64,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
 
     // Extended timeline for 5 seconds total
     const logs = [
-        { text: "Award Plug and Play BIOS Extension v1.0A", delay: 2000 },
-        { text: "Initialize Plug and Play Cards...", delay: 2400 },
-        { text: "PNP Init Completed", delay: 2800 },
-        { text: "Detecting Primary Master   ... GEMINI-3-FLASH (80GB)", delay: 3200 },
-        { text: "Detecting Primary Slave    ... VEO-VIDEO-CORE (40GB)", delay: 3600 },
-        { text: "Detecting Secondary Master ... SEARCH-GROUNDING-UNIT", delay: 4000 },
-        { text: "", delay: 4300 },
-        { text: "Booting from Hard Disk...", delay: 4600 },
+        { text: "Award Plug and Play BIOS Extension v1.0A", delay: 1000 },
+        { text: "Initialize Plug and Play Cards...", delay: 1400 },
+        { text: "PNP Init Completed", delay: 1800 },
+        { text: "Detecting Primary Master   ... GEMINI-3-FLASH (80GB)", delay: 2200 },
+        { text: "Detecting Primary Slave    ... VEO-VIDEO-CORE (40GB)", delay: 2600 },
+        { text: "Detecting Secondary Master ... SEARCH-GROUNDING-UNIT", delay: 3000 },
+        { text: "", delay: 3300 },
+        { text: `CHECKING SATELLITE UPLINK... ${linkStatus}`, delay: 3600 },
+        { text: "Booting from Hard Disk...", delay: 4200 },
     ];
 
     // Animate Headers immediately
