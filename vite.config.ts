@@ -6,16 +6,28 @@ export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), '');
   
-  // LOGIC: 
-  // 1. process.env.API_KEY -> System Variable (Vercel/Netlify Settings)
-  // 2. env.API_KEY -> .env file variable
-  // 3. VITE_API_KEY -> Standard Vite prefix fallback
-  const apiKey = process.env.API_KEY || env.API_KEY || process.env.VITE_API_KEY || env.VITE_API_KEY || "";
+  // PRIORITY ORDER:
+  // 1. VITE_API_KEY (Standard for Frontend Apps)
+  // 2. API_KEY (Generic fallback)
+  // 3. process.env variants (For system-level injection)
+  const apiKey = 
+    process.env.VITE_API_KEY || 
+    env.VITE_API_KEY || 
+    process.env.API_KEY || 
+    env.API_KEY || 
+    "";
   
+  // DEBUG LOGGING: This will show up in your Vercel/Netlify Build Logs
+  if (apiKey) {
+    console.log("✅ SUCCESS: API Key detected during build.");
+  } else {
+    console.log("⚠️ WARNING: No API Key detected during build. App will run in Simulation Mode unless key is in LocalStorage.");
+  }
+
   return {
     plugins: [react()],
     define: {
-      // This replaces the text "process.env.API_KEY" in your client code with the actual string value of the key.
+      // This embeds the key into the code at build time
       'process.env.API_KEY': JSON.stringify(apiKey)
     }
   };

@@ -11,31 +11,33 @@ interface MediaData {
   data: string;
 }
 
-// Robust API Key Retrieval with LocalStorage Fallback
+// Robust API Key Retrieval
 export const getApiKey = () => {
-  // 1. Check Local Storage (Manual Override for deployments)
+  // 1. Check Local Storage (Manual Override has highest priority)
   if (typeof window !== 'undefined') {
     const local = localStorage.getItem(LOCAL_STORAGE_KEY_API);
     if (local) return local;
   }
 
-  // 2. Check Standard Vite Env Vars (import.meta.env)
-  // We check this safely to avoid TS/Runtime errors in non-standard environments
+  // 2. Check Standard Vite Env (VITE_API_KEY)
+  // We use @ts-ignore to bypass the build error you saw earlier, but still check it at runtime
   try {
-    if (import.meta && import.meta.env) {
-       if (import.meta.env.VITE_API_KEY) return import.meta.env.VITE_API_KEY;
-       if (import.meta.env.API_KEY) return import.meta.env.API_KEY;
+    // @ts-ignore
+    if (import.meta.env && import.meta.env.VITE_API_KEY) {
+        // @ts-ignore
+        return import.meta.env.VITE_API_KEY;
     }
-  } catch (e) {}
+  } catch (e) {
+    // Ignore execution errors
+  }
 
-  // 3. Check process.env (injected by Vite define in vite.config.ts)
-  // The 'define' plugin replaces 'process.env.API_KEY' string literal with the actual key value.
+  // 3. Check process.env (Injected by vite.config.ts define)
   try {
     // @ts-ignore
     const processKey = process.env.API_KEY;
-    if (processKey) return processKey;
+    if (processKey && processKey !== "") return processKey;
   } catch (e) {
-    // Ignore ReferenceError if process is not defined
+    // Ignore
   }
 
   return '';
