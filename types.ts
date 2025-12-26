@@ -50,6 +50,7 @@ export interface FactCheckReport {
   officialTimeline: TimelineEvent[];
   commonMisconceptions: string[];
   actionRecommendation: string;
+  isSimulation?: boolean; // New Flag for Quota/Error handling
 }
 
 export interface GroundingChunk {

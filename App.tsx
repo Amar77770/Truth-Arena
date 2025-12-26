@@ -476,6 +476,21 @@ const App: React.FC = () => {
                         )}
                         {report && (
                         <div className="space-y-12 max-w-5xl mx-auto animate-fade-in-up pb-20">
+                            
+                            {/* NEW: Simulation Banner */}
+                            {report.isSimulation && (
+                                <div className="bg-yellow-900/40 border-4 border-yellow-500 p-6 text-center animate-pulse shadow-[0_0_20px_rgba(234,179,8,0.3)]">
+                                    <div className="text-4xl mb-2">⚠️</div>
+                                    <h3 className="font-arcade text-yellow-400 text-lg uppercase tracking-widest mb-2">SIMULATION MODE ACTIVE</h3>
+                                    <p className="font-mono text-yellow-200 text-xs max-w-2xl mx-auto">
+                                        {report.summary.includes("QUOTA") 
+                                            ? "The Neural Uplink (API) has reached its daily quota limits. Live verification will resume when the quota resets."
+                                            : "The system is unable to connect to the Live AI Model (Access Restricted or Network Error). Switching to offline procedural simulation."}
+                                        <br/><strong>[PROCEEDING WITH DEMO DATA]</strong>
+                                    </p>
+                                </div>
+                            )}
+
                             <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
                                 <button onClick={() => { soundService.playNav(); setReport(null); }} className="font-arcade text-xs text-yellow-400 hover:text-white transition-colors flex items-center gap-3 group">
                                     <span className="text-lg">◀</span> RETURN_TO_COMMAND_CENTER
