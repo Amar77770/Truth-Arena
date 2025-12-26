@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { VerdictType } from '../types';
 
@@ -24,7 +25,7 @@ const VerdictBadge: React.FC<VerdictBadgeProps> = ({ verdict }) => {
       colorClass = 'bg-red-600 text-white border-red-900 shadow-[8px_8px_0px_#7f1d1d]';
       label = 'DEBUNKED_FAKE';
       rotate = 'rotate-2';
-      auraColor = 'bg-red-500';
+      auraColor = 'bg-red-600';
       statusCode = 'SYS_ERR_99';
       break;
     case VerdictType.MISLEADING:
@@ -46,8 +47,8 @@ const VerdictBadge: React.FC<VerdictBadgeProps> = ({ verdict }) => {
 
   return (
     <div className="relative inline-block group py-4 px-6">
-        {/* Dynamic Pulsing Aura */}
-        <div className={`absolute inset-0 ${auraColor} blur-2xl animate-aura pointer-events-none rounded-full`}></div>
+        {/* Dynamic Pulsing Aura - Increased spread with -inset-4 */}
+        <div className={`absolute -inset-4 ${auraColor} blur-2xl animate-aura pointer-events-none rounded-full opacity-40 group-hover:opacity-80 transition-opacity`}></div>
         
         {/* Decorative corner brackets */}
         <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-white/20 z-20 group-hover:border-white transition-colors"></div>

@@ -226,7 +226,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
           </div>
           <button 
             onClick={handleStartSequence}
-            className="group bg-white text-black px-4 py-1 text-[8px] md:text-[10px] border-2 border-white hover:bg-cyan-500 hover:border-cyan-500 transition-all shadow-[4px_4px_0px_cyan] active:translate-x-1 active:translate-y-1 active:shadow-none font-bold"
+            className="group bg-white text-black px-4 py-1 text-[8px] md:text-[10px] border-2 border-white hover:bg-cyan-500 hover:border-cyan-500 hover:animate-pulse transition-all shadow-[4px_4px_0px_cyan] active:translate-x-1 active:translate-y-1 active:shadow-none font-bold"
           >
             INITIALIZE_LINK
           </button>

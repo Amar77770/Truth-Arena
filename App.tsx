@@ -337,6 +337,9 @@ const App: React.FC = () => {
                    {/* CHALLENGER: RUMOR (Flies in from Left) */}
                    <div className="flex flex-col items-center animate-clash-left flex-1 h-full justify-center group relative w-full">
                        <div className="relative z-10 flex flex-col items-center">
+                           {/* Added Red Glow Behind Rumor */}
+                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] aspect-square bg-pink-600/40 blur-[120px] rounded-full mix-blend-screen pointer-events-none animate-pulse"></div>
+                           
                            <div className="text-[12rem] md:text-[20rem] transform -scale-x-100 filter drop-shadow-[0_0_80px_#ec4899] mb-4 animate-glitch transition-transform group-hover:scale-110">🦜</div>
                            <div className="space-y-4 text-center w-full max-w-sm">
                                <div className="font-arcade text-pink-500 text-3xl md:text-5xl bg-black px-10 py-4 border-4 border-pink-500 shadow-[12px_12px_0px_#701a75] uppercase tracking-[0.2em] inline-block">RUMOR</div>
@@ -360,6 +363,9 @@ const App: React.FC = () => {
                    {/* DEFENDER: LOGIC (Flies in from Right) */}
                    <div className="flex flex-col items-center animate-clash-right flex-1 h-full justify-center group relative w-full">
                        <div className="relative z-10 flex flex-col items-center">
+                           {/* Added Cyan Glow Behind Logic */}
+                           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] aspect-square bg-cyan-600/40 blur-[120px] rounded-full mix-blend-screen pointer-events-none animate-pulse"></div>
+
                            <div className="text-[12rem] md:text-[20rem] filter drop-shadow-[0_0_80px_#06b6d4] mb-4 transition-transform group-hover:scale-110">🕵️‍♂️</div>
                            <div className="space-y-4 text-center w-full max-w-sm">
                                <div className="font-arcade text-cyan-400 text-3xl md:text-5xl bg-black px-10 py-4 border-4 border-cyan-400 shadow-[12px_12px_0px_#164e63] uppercase tracking-[0.2em] inline-block">LOGIC</div>
@@ -508,6 +514,11 @@ const App: React.FC = () => {
                                 const theme = getThemeClasses(report.claims[0]?.verdict);
                                 return (
                                     <div className={`border-4 ${theme.border} bg-black/90 backdrop-blur-md p-10 ${theme.shadow} relative group transition-all`}>
+                                        {/* Red Glow behind Verdict Card for FAKE news */}
+                                        {report.claims[0]?.verdict === VerdictType.CONTRADICTED && (
+                                            <div className="absolute -inset-4 bg-red-600/30 blur-2xl -z-10 rounded-lg animate-pulse"></div>
+                                        )}
+
                                         <div className={`absolute top-0 right-0 ${theme.badgeBg} text-black font-arcade text-[10px] px-4 py-2 border-b-4 border-l-4 border-black font-black uppercase tracking-tighter`}>COMMAND_VERDICT</div>
                                         <div className="flex flex-col md:flex-row gap-10 items-start">
                                             <div className="flex-1">
