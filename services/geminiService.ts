@@ -4,7 +4,9 @@ import { FactCheckReport, Source, Claim, VerdictType, ClaimSeverity, NewsItem, C
 
 // --- CONFIGURATION ---
 const LOCAL_STORAGE_KEY_API = 'truth_arena_api_key';
-const MODEL_NAME = 'gemini-2.5-flash-preview'; // 2.5 is currently more reliable for Grounding than 3-preview
+// CRITICAL FIX: 'gemini-2.5-flash-preview' does not exist. 
+// We use 'gemini-2.0-flash' which is stable and supports Google Search.
+const MODEL_NAME = 'gemini-2.0-flash'; 
 
 // --- HELPERS ---
 
@@ -142,7 +144,9 @@ export async function analyzeExamNews(topic: string, media?: { mimeType: string;
 
   } catch (error: any) {
     console.error("Analysis Error:", error);
-    return getMockReport(topic, error.message || "API ERROR");
+    let errorMessage = error.message || "API ERROR";
+    if (errorMessage.includes("404")) errorMessage = `MODEL '${MODEL_NAME}' NOT FOUND. CHECK REGION/ACCESS.`;
+    return getMockReport(topic, errorMessage);
   }
 }
 
@@ -217,7 +221,8 @@ function parseReportResponse(result: any, originalTopic: string): FactCheckRepor
 
   // Extract Grounding Sources
   const sources: Source[] = [];
-  const chunks = result.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+  const candidate = result.candidates?.[0];
+  const chunks = candidate?.groundingMetadata?.groundingChunks || [];
   
   chunks.forEach((c: any) => {
     if (c.web?.uri && c.web?.title) {
@@ -227,7 +232,7 @@ function parseReportResponse(result: any, originalTopic: string): FactCheckRepor
 
   // Fallback Sources if Google Search didn't return metadata (happens sometimes even if it searched)
   if (sources.length === 0) {
-     sources.push({ title: "Google Search", uri: `https://www.google.com/search?q=${encodeURIComponent(originalTopic)}` });
+     sources.push({ title: "Google Search Verification", uri: `https://www.google.com/search?q=${encodeURIComponent(originalTopic + " official news")}` });
   }
 
   return {
