@@ -16,7 +16,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   useEffect(() => {
     // Check if key exists on mount
     const key = getApiKey();
-    if (key) {
+    if (key && key.length > 5) {
         setHasEnvKey(true);
     }
   }, []);
@@ -82,7 +82,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                             </button>
                         </div>
                         <div className="text-[8px] text-green-700 text-left mt-1 font-mono">
-                            API KEY DETECTED FROM ENVIRONMENT
+                            API KEY DETECTED FROM VERCEL ENV
                         </div>
                     </div>
                 ) : (
